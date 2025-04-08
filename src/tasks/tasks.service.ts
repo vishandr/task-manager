@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './task.entity';
+// import { CreateTaskDto } from './dto/create-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -16,15 +17,34 @@ export class TasksService {
     return this.tasksRepository.find();
   }
 
+  async findOne(id: string): Promise<Task> {
+    const task = await this.tasksRepository.findOneBy({ id });
+    if (!task) {
+      throw new Error(`Task with id ${id} not found`);
+    }
+    return task;
+  }
+
   // Создание задачи
   async create(title: string, description: string): Promise<Task> {
-    const task = this.tasksRepository.create({ title, description });
+    const task = this.tasksRepository.create({
+      title,
+      description,
+      isCompleted: false,
+    });
     return this.tasksRepository.save(task);
   }
+  // async create(createTaskDto: CreateTaskDto): Promise<Task> {
+  //   const task = this.tasksRepository.create({
+  //     ...createTaskDto,
+  //     isCompleted: false,
+  //   });
+  //   return this.tasksRepository.save(task);
+  // }
 
   // Обновление задачи
   async update(
-    id: number,
+    id: string,
     title: string,
     description: string,
     completed: boolean,
@@ -42,7 +62,8 @@ export class TasksService {
   }
 
   // Удаление задачи
-  async remove(id: number): Promise<void> {
-    await this.tasksRepository.delete(id);
+  async delete(id: string): Promise<void> {
+    const task = await this.findOne(id);
+    await this.tasksRepository.remove(task);
   }
 }

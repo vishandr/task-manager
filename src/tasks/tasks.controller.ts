@@ -1,3 +1,4 @@
+// import { CreateTaskDto } from './dto/create-task.dto';
 import {
   Controller,
   Get,
@@ -16,8 +17,13 @@ export class TasksController {
 
   // Получение всех задач
   @Get()
-  async findAll(): Promise<Task[]> {
+  async getAllTasks(): Promise<Task[]> {
     return this.tasksService.findAll();
+  }
+
+  @Get(':id')
+  async getTaskById(@Param('id') id: string): Promise<Task> {
+    return this.tasksService.findOne(id);
   }
 
   // Создание новой задачи
@@ -28,11 +34,15 @@ export class TasksController {
   ): Promise<Task> {
     return this.tasksService.create(title, description);
   }
+  // @Post()
+  // async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+  //   return this.tasksService.create(createTaskDto);
+  // }
 
   // Обновление задачи
   @Put(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body('title') title: string,
     @Body('description') description: string,
     @Body('completed') completed: boolean,
@@ -42,7 +52,7 @@ export class TasksController {
 
   // Удаление задачи
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
-    return this.tasksService.remove(id);
+  async deleteTask(@Param('id') id: string): Promise<void> {
+    return this.tasksService.delete(id);
   }
 }
