@@ -17,6 +17,33 @@ export class TasksService {
     return this.tasksRepository.find();
   }
 
+  // async findAllByCompletion(isCompleted: boolean): Promise<Task[]> {
+  //   return this.tasksRepository.find({
+  //     where: { isCompleted },
+  //     // order: { title: 'ASC' }, // опционально сортировка по заголовку
+  //   });
+  // }
+
+  async findAllWithFilters(
+    isCompleted?: boolean,
+    search?: string,
+  ): Promise<Task[]> {
+    const query = this.tasksRepository.createQueryBuilder('task');
+
+    if (isCompleted !== undefined) {
+      query.andWhere('task.isCompleted = :isCompleted', { isCompleted });
+    }
+
+    if (search) {
+      query.andWhere(
+        '(task.title ILIKE :search OR task.description ILIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    return query.getMany();
+  }
+
   async findOne(id: string): Promise<Task> {
     const task = await this.tasksRepository.findOneBy({ id });
     if (!task) {
@@ -34,13 +61,6 @@ export class TasksService {
     });
     return this.tasksRepository.save(task);
   }
-  // async create(createTaskDto: CreateTaskDto): Promise<Task> {
-  //   const task = this.tasksRepository.create({
-  //     ...createTaskDto,
-  //     isCompleted: false,
-  //   });
-  //   return this.tasksRepository.save(task);
-  // }
 
   // Обновление задачи
   async update(

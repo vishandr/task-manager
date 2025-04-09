@@ -7,6 +7,7 @@ import {
   Param,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './task.entity';
@@ -16,9 +17,19 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   // Получение всех задач
+  // @Get()
+  // async getAllTasks(): Promise<Task[]> {
+  //   return this.tasksService.findAll();
+  // }
+
   @Get()
-  async getAllTasks(): Promise<Task[]> {
-    return this.tasksService.findAll();
+  async getAllTasks(
+    @Query('isCompleted') isCompleted?: string,
+    @Query('search') search?: string,
+  ): Promise<Task[]> {
+    const completed =
+      isCompleted === undefined ? undefined : isCompleted === 'true';
+    return this.tasksService.findAllWithFilters(completed, search);
   }
 
   @Get(':id')
@@ -34,10 +45,6 @@ export class TasksController {
   ): Promise<Task> {
     return this.tasksService.create(title, description);
   }
-  // @Post()
-  // async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-  //   return this.tasksService.create(createTaskDto);
-  // }
 
   // Обновление задачи
   @Put(':id')
