@@ -52,9 +52,9 @@ export class TasksController {
     @Param('id') id: string,
     @Body('title') title: string,
     @Body('description') description: string,
-    @Body('completed') completed: boolean,
+    @Body('isCompleted') isCompleted: boolean,
   ): Promise<Task> {
-    return this.tasksService.update(id, title, description, completed);
+    return this.tasksService.update(id, title, description, isCompleted);
   }
 
   // Удаление задачи

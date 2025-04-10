@@ -67,7 +67,7 @@ export class TasksService {
     id: string,
     title: string,
     description: string,
-    completed: boolean,
+    isCompleted: boolean,
   ): Promise<Task> {
     const task = await this.tasksRepository.findOne({
       where: { id },
@@ -77,7 +77,7 @@ export class TasksService {
     }
     task.title = title;
     task.description = description;
-    task.isCompleted = completed;
+    task.isCompleted = isCompleted;
     return this.tasksRepository.save(task);
   }
 
